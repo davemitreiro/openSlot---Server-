@@ -1,4 +1,4 @@
-/* const { Schema, model } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const appointmentSchema = new Schema({
   name: {
@@ -25,4 +25,3 @@ const appointmentSchema = new Schema({
 const Appointments = model("Appointments", appointmentSchema);
 
 module.exports = Appointments;
- */
