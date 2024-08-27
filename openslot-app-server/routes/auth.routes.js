@@ -106,7 +106,7 @@ router.post("/login", (req, res, next) => {
         const { _id, email, fullname, age } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, fullname, age };
+        const payload = { _id, email, fullname, age, role: "user" };
 
         // Create a JSON Web Token and sign it
         const authToken = jwt.sign(payload, process.env.SECRET_TOKEN, {
@@ -140,6 +140,12 @@ router.get("/user", isAuthenticated, (req, res, next) => {
 router.get("/user/:userId", isAuthenticated, (req, res) => {
   const { userId } = req.params;
 
+  if (req.payload.role !== "user") {
+    return res
+      .status(403)
+      .json({ message: "Access restricted to  regular users only" });
+  }
+
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ error: "Invalid user ID format" });
   }
@@ -162,6 +168,12 @@ router.get("/user/:userId", isAuthenticated, (req, res) => {
 router.put("/user/:userId", isAuthenticated, (req, res) => {
   const { userId } = req.params;
   const { fullname, age, email, password } = req.body;
+
+  if (req.payload.role !== "user") {
+    return res
+      .status(403)
+      .json({ message: "Access restricted to  regular users only" });
+  }
 
   User.findByIdAndUpdate(
     userId,
@@ -186,6 +198,12 @@ router.put("/user/:userId", isAuthenticated, (req, res) => {
 //delete user
 router.delete("/user/:userId", isAuthenticated, (req, res) => {
   const { userId } = req.params;
+
+  if (req.payload.role !== "user") {
+    return res
+      .status(403)
+      .json({ message: "Access restricted to  regular users only" });
+  }
 
   User.findByIdAndDelete(userId)
     .then((user) => {
@@ -274,7 +292,7 @@ router.post("/login-pro", (req, res, next) => {
   }
 
   // Check the users collection if a user with the same email exists
-  User.findOne({ email })
+  Pro.findOne({ email })
     .then((foundPro) => {
       if (!foundPro) {
         // If the user is not found, send an error response
@@ -283,14 +301,14 @@ router.post("/login-pro", (req, res, next) => {
       }
 
       // Compare the provided password with the one saved in the database
-      const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
+      const passwordCorrect = bcrypt.compareSync(password, foundPro.password);
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
         const { _id, email, fullname } = foundPro;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, fullname };
+        const payload = { _id, email, fullname, role: "pro" };
 
         // Create a JSON Web Token and sign it
         const authToken = jwt.sign(payload, process.env.SECRET_TOKEN, {
@@ -308,7 +326,7 @@ router.post("/login-pro", (req, res, next) => {
 });
 
 // GET  /auth/verify  -  Used to verify JWT stored on the client
-router.get("/verify", isAuthenticated, (req, res, next) => {
+router.get("/verify-pro", isAuthenticated, (req, res, next) => {
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
 });
@@ -323,6 +341,10 @@ router.get("/pro", isAuthenticated, (req, res, next) => {
 //get user by ID
 router.get("/pro/:proId", isAuthenticated, (req, res) => {
   const { proId } = req.params;
+
+  if (req.payload.role !== "pro") {
+    return res.status(403).json({ message: "Access restricted to pros only" });
+  }
 
   if (!mongoose.Types.ObjectId.isValid(proId)) {
     return res.status(400).json({ error: "Invalid account ID format" });
@@ -347,11 +369,14 @@ router.put("/pro/:proId", isAuthenticated, (req, res) => {
   const { proId } = req.params;
   const { fullname, email, password } = req.body;
 
+  if (req.payload.role !== "pro") {
+    return res.status(403).json({ message: "Access restricted to pros only" });
+  }
+
   Pro.findByIdAndUpdate(
     proId,
     {
       fullname,
-      age,
       email,
       password,
     },
@@ -371,9 +396,13 @@ router.put("/pro/:proId", isAuthenticated, (req, res) => {
 router.delete("/pro/:proId", isAuthenticated, (req, res) => {
   const { proId } = req.params;
 
+  if (req.payload.role !== "pro") {
+    return res.status(403).json({ message: "Access restricted to pros only" });
+  }
+
   Pro.findByIdAndDelete(proId)
-    .then((user) => {
-      console.log("User deleted:", pro);
+    .then((pro) => {
+      console.log("Account deleted:", pro);
       res.status(201).json(pro);
     })
     .catch((error) => {
