@@ -1,6 +1,5 @@
 const { Schema, model } = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const proSchema = new Schema({
   _id: {
     type: String,
@@ -34,6 +33,10 @@ const proSchema = new Schema({
   password: {
     type: String,
     required: [true, "Password is required."],
+  },
+  appointment: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
   },
 });
 
