@@ -217,7 +217,7 @@ router.delete("/delete/:proId/:userId/:appointmentId/", async (req, res) => {
 
 //User delete appointment
 
-router.delete("/delete/:userId/:proId/:appointmentId/", async (req, res) => {
+/*router.delete("/delete/:userId/:proId/:appointmentId/", async (req, res) => {
   const { appointmentId, userId, proId } = req.params;
 
   try {
@@ -240,6 +240,7 @@ router.delete("/delete/:userId/:proId/:appointmentId/", async (req, res) => {
     console.error("Error while deleting appointment ->", error);
     res.status(500).json({ error: "Failed to delete appointment" });
   }
-});
+});`*/
+//
 
 module.exports = router;
