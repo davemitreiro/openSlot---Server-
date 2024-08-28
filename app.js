@@ -30,7 +30,8 @@ app.use("/auth", authRoutes);
 /* const protectedRoutes = require("./routes/protected.routes");
 app.use("/protected", isAuthenticated, protectedRoutes); */
 
-//const appointmentRoutes = require("./routes/appointment.routes");
+const appointmentRoutes = require("./routes/appointment.routes");
+app.use("/appointments", appointmentRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);

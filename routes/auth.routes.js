@@ -57,10 +57,38 @@ router.post("/signup", async (req, res, next) => {
   let foundUser;
 
   if (role === "pro") {
-    // ----------------------------
-    // TODO: sign up pro
-    // ----------------------------
+    // SIGNUP PRO
+    try {
+      foundUser = await Pro.findOne({ email });
+
+      // Check if pro already exists
+      if (foundUser) {
+        res.status(400).json({ message: "User already exists" });
+        return;
+      }
+
+      // If email is unique, proceed to hash password
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hashedPassword = bcrypt.hashSync(password, salt);
+
+      const newUser = {
+        ...data,
+        password: hashedPassword,
+      };
+
+      try {
+        const createdUser = await Pro.create(newUser);
+        const userData = buildResponseObject(createdUser);
+
+        res.status(201).json(userData);
+      } catch (error) {
+        return next(error);
+      }
+    } catch (error) {
+      return next(error);
+    }
   } else {
+    // SIGNUP USER
     try {
       foundUser = await User.findOne({ email });
 
@@ -125,11 +153,23 @@ router.post("/login", async (req, res, next) => {
 
   // Check if the user is a pro and search the user in the correct collection
   if (role === "pro") {
-    // ----------------------------
-    // TODO: sign up pro
-    // ----------------------------
+    // LOGIN PRO
+
+    try {
+      foundUser = await Pro.findOne({ email });
+
+      if (!foundUser) {
+        // if the user is not found, send error response
+        res.status(401).json({ message: "User not found" });
+        return;
+      }
+    } catch (error) {
+      return next(error);
+    }
   } else {
     try {
+      // LOGIN User
+
       foundUser = await User.findOne({ email });
 
       if (!foundUser) {
@@ -165,6 +205,122 @@ router.post("/login", async (req, res, next) => {
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
+});
+
+//USER ROUTES (GetById,Update,Delete)
+//--------------------------------------------------------------------------------------------------------------------------------
+router.get("/user/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error("Error getting user:", err);
+      res.status(500).json({ error: "Failed to get user" });
+    });
+});
+
+router.put("/user/:userId", (req, res) => {
+  const { userId } = req.params;
+  const { email, password } = req.body;
+
+  User.findByIdAndUpdate(
+    userId,
+    {
+      email,
+      password,
+    },
+    { new: true }
+  )
+    .then((user) => {
+      console.log("User updated:", user);
+      res.status(201).json(user);
+    })
+    .catch((error) => {
+      console.error("Error while updating user account ->", error);
+      res.status(500).json({ error: "Failed to update user account" });
+    });
+});
+
+router.delete("/user/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  User.findByIdAndDelete(userId)
+    .then((user) => {
+      console.log("User deleted:", userId);
+      res.status(201).json(user);
+    })
+    .catch((error) => {
+      console.error("Error while deleting user account ->", error);
+      res.status(500).json({ error: "Failed to delete user account" });
+    });
+});
+
+//PROFESSIONAL ROUTES(GetById,Update,Delete)
+//-------------------------------------------------------------------------------------------------------------------------------------------
+
+//get pro by ID
+
+router.get("/pro/:proId", (req, res) => {
+  const { proId } = req.params;
+
+  Pro.findById(proId)
+    .then((pro) => {
+      if (!pro) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json(pro);
+    })
+    .catch((err) => {
+      console.error("Error getting user:", err);
+      res.status(500).json({ error: "Failed to get user" });
+    });
+});
+
+//update pro
+router.put("/pro/:proId", (req, res) => {
+  const { proId } = req.params;
+  const { fullname, email, password } = req.body;
+
+  Pro.findByIdAndUpdate(
+    proId,
+    {
+      fullname,
+      email,
+      password,
+    },
+    { new: true }
+  )
+    .then((pro) => {
+      console.log("User updated:", pro);
+      res.status(201).json(pro);
+    })
+    .catch((error) => {
+      console.error("Error while updating professional user ->", error);
+      res.status(500).json({ error: "Failed to update professional user" });
+    });
+});
+
+//delete pro
+router.delete("/pro/:proId", (req, res) => {
+  const { proId } = req.params;
+
+  Pro.findByIdAndDelete(proId)
+    .then((pro) => {
+      console.log("User deleted:", proId);
+      res.status(201).json(pro);
+    })
+    .catch((error) => {
+      console.error("Error while deleting professional user ->", error);
+      res.status(500).json({ error: "Failed to delete professional user" });
+    });
 });
 
 module.exports = router;

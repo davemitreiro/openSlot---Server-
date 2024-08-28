@@ -16,15 +16,6 @@ const isAuthenticated = (req, res, next) => {
     // Add payload to the request object
     req.payload = payload;
 
-    // Optional: Check if the user is of a certain role (user or pro)
-    if (req.payload.role === "user") {
-      console.log("Authenticated user");
-    } else if (req.payload.role === "pro") {
-      console.log("Authenticated pro");
-    } else {
-      return res.status(403).json({ message: "Invalid role" });
-    }
-
     next();
   } catch (error) {
     res.status(401).json({ message: "Invalid or expired token" });

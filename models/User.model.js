@@ -18,10 +18,12 @@ const userSchema = new Schema({
   notes: {
     type: [String],
   },
-  appointments: {
-    type: [Schema.Types.ObjectId],
-    ref: "Appointment",
-  },
+  appointments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Appointment",
+    },
+  ],
 });
 
 const User = model("User", userSchema);
