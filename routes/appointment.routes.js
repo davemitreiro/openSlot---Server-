@@ -188,23 +188,6 @@ router.put("/pro/:proId/:appointmentId/update", async (req, res) => {
   }
 });
 
-//User - Delete appointment
-router.delete("/user/:userId/:appointmentId/delete", async (req, res) => {
-  const { appointmentId } = req.params;
-
-  try {
-    const appointment = await Appointment.findByIdAndDelete(appointmentId);
-    if (!appointment) {
-      return res.status(404).json({ error: "Appointment not found" });
-    }
-    console.log("Appointment deleted:", appointment);
-    res.status(200).json({ message: "Appointment successfully deleted" });
-  } catch (error) {
-    console.error("Error while deleting appointment ->", error);
-    res.status(500).json({ error: "Failed to delete appointment" });
-  }
-});
-
 //Pro delete appointment
 
 router.delete("/delete/:proId/:userId/:appointmentId/", async (req, res) => {
