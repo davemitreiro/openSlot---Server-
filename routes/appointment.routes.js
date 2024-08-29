@@ -122,20 +122,38 @@ router.put("/:appointmentId/update", async (req, res) => {
 router.delete("/:appointmentId/delete", async (req, res) => {
   const { appointmentId } = req.params;
 
+  // Start by filtering out the appointmentId from user and Pro
+  /*  try {
+    const user = await Appointment.findById(appointmentId).userId;
+    userAppointments = await User.findById(user).appointments;
+    userAppointments.filter((appointment) => appointment !== appointmentId);
+  } catch (error) {
+    console.error("Error while deleting appointment from user");
+  } */
+
   try {
     const appointment = await Appointment.findByIdAndDelete(appointmentId);
 
     if (!appointment) {
       return res.status(404).json({ error: "Appointment not found" });
     }
+
+    const { user, pro } = appointment;
+    // Remove the appointment from the pro's appointments array
+    await User.findByIdAndUpdate(user, {
+      $pull: { appointments: appointment._id },
+    });
+
+    // Remove the appointment from the pro's appointments array
+    await Pro.findByIdAndUpdate(pro, {
+      $pull: { appointments: appointment._id },
+    });
     console.log("Appointment deleted:", appointment);
     res.status(200).json({ message: "Appointment successfully deleted" });
   } catch (error) {
     console.error("Error while deleting appointment ->", error);
     res.status(500).json({ error: "Failed to delete appointment" });
   }
-
-  // Filter appointment in Pro and User
 });
 
 module.exports = router;
