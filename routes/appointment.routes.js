@@ -5,6 +5,10 @@ const Appointment = require("../models/Appointment.model");
 const User = require("../models/User.model");
 const Pro = require("../models/Pro.model");
 
+// -----------------------
+// -> You don't need this route, at least for now
+// -----------------------
+
 // Get all appointments by userID
 router.get("/user/:userId/all", async (req, res) => {
   const { userId } = req.params;
@@ -18,6 +22,10 @@ router.get("/user/:userId/all", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve appointments" });
   }
 });
+
+// -----------------------
+// -> You don't need this route, at least for now
+// -----------------------
 
 //Get all appointments by proID
 router.get("/pro/:proId/all", async (req, res) => {
@@ -38,8 +46,13 @@ router.get("/pro/:proId/all", async (req, res) => {
   }
 });
 
+// -----------------------
+// -> /create why?
+// -> use only /
+// -----------------------
+
 // Create a new appointment
-router.post("/create", async (req, res) => {
+router.post("/", async (req, res) => {
   const { title, startTime, endTime, notes, pro, user } = req.body;
 
   try {
@@ -93,8 +106,13 @@ router.get("/:appointmentId", async (req, res) => {
   }
 });
 
+// -----------------------
+// -> /:appointmentId/update why?
+// -> use only /:appointmentId
+// -----------------------
+
 // User - Update appointment
-router.put("/:appointmentId/update", async (req, res) => {
+router.put("/:appointmentId", async (req, res) => {
   const { appointmentId } = req.params;
   const { title, startTime, endTime, notes } = req.body;
 
@@ -118,8 +136,13 @@ router.put("/:appointmentId/update", async (req, res) => {
   }
 });
 
+// -----------------------
+// -> /:appointmentId/delete why?
+// -> use only /:appointmentId
+// -----------------------
+
 //delete appointment
-router.delete("/:appointmentId/delete", async (req, res) => {
+router.delete("/:appointmentId", async (req, res) => {
   const { appointmentId } = req.params;
 
   // Start by filtering out the appointmentId from user and Pro
