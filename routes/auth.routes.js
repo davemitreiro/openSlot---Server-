@@ -4,9 +4,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
-const User = require("../models/User.model");
-const Pro = require("../models/Pro.model.js");
-
 const isAuthenticated = require("../middleware/jwt-middleware.js");
 
 // How many rounds should bcrypt run the salt (default - 10 rounds)
@@ -205,122 +202,6 @@ router.post("/login", async (req, res, next) => {
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
-});
-
-//USER ROUTES (GetById,Update,Delete)
-//--------------------------------------------------------------------------------------------------------------------------------
-router.get("/user/:userId", (req, res) => {
-  const { userId } = req.params;
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      res.json(user);
-    })
-    .catch((err) => {
-      console.error("Error getting user:", err);
-      res.status(500).json({ error: "Failed to get user" });
-    });
-});
-
-router.put("/user/:userId", (req, res) => {
-  const { userId } = req.params;
-  const { email, password } = req.body;
-
-  User.findByIdAndUpdate(
-    userId,
-    {
-      email,
-      password,
-    },
-    { new: true }
-  )
-    .then((user) => {
-      console.log("User updated:", user);
-      res.status(201).json(user);
-    })
-    .catch((error) => {
-      console.error("Error while updating user account ->", error);
-      res.status(500).json({ error: "Failed to update user account" });
-    });
-});
-
-router.delete("/user/:userId", (req, res) => {
-  const { userId } = req.params;
-
-  User.findByIdAndDelete(userId)
-    .then((user) => {
-      console.log("User deleted:", userId);
-      res.status(201).json(user);
-    })
-    .catch((error) => {
-      console.error("Error while deleting user account ->", error);
-      res.status(500).json({ error: "Failed to delete user account" });
-    });
-});
-
-//PROFESSIONAL ROUTES(GetById,Update,Delete)
-//-------------------------------------------------------------------------------------------------------------------------------------------
-
-//get pro by ID
-
-router.get("/pro/:proId", (req, res) => {
-  const { proId } = req.params;
-
-  Pro.findById(proId)
-    .then((pro) => {
-      if (!pro) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      res.json(pro);
-    })
-    .catch((err) => {
-      console.error("Error getting user:", err);
-      res.status(500).json({ error: "Failed to get user" });
-    });
-});
-
-//update pro
-router.put("/pro/:proId", (req, res) => {
-  const { proId } = req.params;
-  const { fullname, email, password } = req.body;
-
-  Pro.findByIdAndUpdate(
-    proId,
-    {
-      fullname,
-      email,
-      password,
-    },
-    { new: true }
-  )
-    .then((pro) => {
-      console.log("User updated:", pro);
-      res.status(201).json(pro);
-    })
-    .catch((error) => {
-      console.error("Error while updating professional user ->", error);
-      res.status(500).json({ error: "Failed to update professional user" });
-    });
-});
-
-//delete pro
-router.delete("/pro/:proId", (req, res) => {
-  const { proId } = req.params;
-
-  Pro.findByIdAndDelete(proId)
-    .then((pro) => {
-      console.log("User deleted:", proId);
-      res.status(201).json(pro);
-    })
-    .catch((error) => {
-      console.error("Error while deleting professional user ->", error);
-      res.status(500).json({ error: "Failed to delete professional user" });
-    });
 });
 
 module.exports = router;
