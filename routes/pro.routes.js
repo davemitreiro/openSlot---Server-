@@ -24,8 +24,13 @@ router.get("/:proId", (req, res) => {
     });
 });
 
+// -----------------------
+// -> /:proId/update why?
+// -> use only /:proId
+// -----------------------
+
 //update pro
-router.put("/:proId/update", isAuthenticated, (req, res) => {
+router.put("/:proId", isAuthenticated, (req, res) => {
   const { proId } = req.params;
   const { fullname, email, password } = req.body;
 
@@ -48,8 +53,13 @@ router.put("/:proId/update", isAuthenticated, (req, res) => {
     });
 });
 
+// -----------------------
+// -> /:proId/delete why?
+// -> use only /:proId
+// -----------------------
+
 //delete pro
-router.delete("/:proId/delete", isAuthenticated, (req, res) => {
+router.delete("/:proId", isAuthenticated, (req, res) => {
   const { proId } = req.params;
 
   Pro.findByIdAndDelete(proId)
