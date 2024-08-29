@@ -22,7 +22,12 @@ router.get("/:userId", (req, res) => {
     });
 });
 
-router.put("/:userId/update", isAuthenticated, (req, res) => {
+// -----------------------
+// -> /:userId/update why?
+// -> use only /:userID
+// -----------------------
+
+router.put("/:userId", isAuthenticated, (req, res) => {
   const { userId } = req.params;
   const { email, password } = req.body;
 
@@ -44,7 +49,12 @@ router.put("/:userId/update", isAuthenticated, (req, res) => {
     });
 });
 
-router.delete("/:userId/delete", isAuthenticated, (req, res) => {
+// -----------------------
+// -> /:userId/delete why?
+// -> use only /:userID
+// -----------------------
+
+router.delete("/:userId", isAuthenticated, (req, res) => {
   const { userId } = req.params;
 
   User.findByIdAndDelete(userId)
