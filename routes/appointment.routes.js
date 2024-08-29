@@ -5,6 +5,10 @@ const Appointment = require("../models/Appointment.model");
 const User = require("../models/User.model");
 const Pro = require("../models/Pro.model");
 
+// -----------------------
+// -> You don't need this route, at least for now
+// -----------------------
+
 // Get all appointments by userID
 router.get("/user/:userId/all", async (req, res) => {
   const { userId } = req.params;
@@ -18,6 +22,10 @@ router.get("/user/:userId/all", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve appointments" });
   }
 });
+
+// -----------------------
+// -> You don't need this route, at least for now
+// -----------------------
 
 //Get all appointments by proID
 router.get("/pro/:proId/all", async (req, res) => {
@@ -38,8 +46,13 @@ router.get("/pro/:proId/all", async (req, res) => {
   }
 });
 
+// -----------------------
+// -> /create why?
+// -> use only /
+// -----------------------
+
 // Create a new appointment
-router.post("/create", async (req, res) => {
+router.post("/", async (req, res) => {
   const { title, startTime, endTime, notes, pro, user } = req.body;
 
   try {
@@ -93,43 +106,17 @@ router.get("/:appointmentId", async (req, res) => {
   }
 });
 
-// Get appointments by proId
-router.get("/pro/:proId", async (req, res) => {
-  const { proId } = req.params;
-
-  try {
-    const appointments = await Appointment.find({ pro: proId });
-    if (!appointments.length) {
-      return res
-        .status(404)
-        .json({ error: "No appointments found for this professional" });
-    }
-    res.json(appointments);
-  } catch (error) {
-    console.error("Error getting appointments by proId:", error);
-    res.status(500).json({ error: "Failed to get appointments" });
-  }
-});
+// -----------------------
+// -> /:appointmentId/update why?
+// -> use only /:appointmentId
+// -----------------------
 
 // User - Update appointment
-router.put("/user/:userId/:appointmentId/update", async (req, res) => {
-  const { userId, appointmentId } = req.params;
+router.put("/:appointmentId", async (req, res) => {
+  const { appointmentId } = req.params;
   const { title, startTime, endTime, notes } = req.body;
 
   try {
-    // Ensure the appointment belongs to the user
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const appointmentIndex = user.appointments.indexOf(appointmentId);
-    if (appointmentIndex === -1) {
-      return res
-        .status(404)
-        .json({ error: "Appointment not found for this user" });
-    }
-
     // Update the appointment
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       appointmentId,
@@ -149,49 +136,23 @@ router.put("/user/:userId/:appointmentId/update", async (req, res) => {
   }
 });
 
-// Pro User - Update appointment
+// -----------------------
+// -> /:appointmentId/delete why?
+// -> use only /:appointmentId
+// -----------------------
 
-router.put("/pro/:proId/:appointmentId/update", async (req, res) => {
-  const { proId, appointmentId } = req.params;
-  const { title, startTime, endTime, notes } = req.body;
+//delete appointment
+router.delete("/:appointmentId", async (req, res) => {
+  const { appointmentId } = req.params;
 
-  try {
-    // Ensure the appointment belongs to the user
-    const pro = await Pro.findById(proId);
-    if (!pro) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const appointmentIndex = pro.appointments.indexOf(appointmentId);
-    if (appointmentIndex === -1) {
-      return res
-        .status(404)
-        .json({ error: "Appointment not found for this user" });
-    }
-
-    // Update the appointment
-    const updatedAppointment = await Appointment.findByIdAndUpdate(
-      appointmentId,
-      { title, startTime, endTime, notes },
-      { new: true }
-    );
-
-    if (!updatedAppointment) {
-      return res.status(404).json({ error: "Appointment not found" });
-    }
-
-    console.log("Appointment updated:", updatedAppointment);
-    res.json(updatedAppointment);
+  // Start by filtering out the appointmentId from user and Pro
+  /*  try {
+    const user = await Appointment.findById(appointmentId).userId;
+    userAppointments = await User.findById(user).appointments;
+    userAppointments.filter((appointment) => appointment !== appointmentId);
   } catch (error) {
-    console.error("Error while updating appointment ->", error);
-    res.status(500).json({ error: "Failed to update appointment" });
-  }
-});
-
-//Pro delete appointment
-
-router.delete("/delete/:proId/:userId/:appointmentId/", async (req, res) => {
-  const { appointmentId, userId, proId } = req.params;
+    console.error("Error while deleting appointment from user");
+  } */
 
   try {
     const appointment = await Appointment.findByIdAndDelete(appointmentId);
@@ -199,13 +160,16 @@ router.delete("/delete/:proId/:userId/:appointmentId/", async (req, res) => {
     if (!appointment) {
       return res.status(404).json({ error: "Appointment not found" });
     }
-    await User.findByIdAndUpdate(userId, {
-      $pull: { appointments: appointmentId },
+
+    const { user, pro } = appointment;
+    // Remove the appointment from the pro's appointments array
+    await User.findByIdAndUpdate(user, {
+      $pull: { appointments: appointment._id },
     });
 
     // Remove the appointment from the pro's appointments array
-    await Pro.findByIdAndUpdate(proId, {
-      $pull: { appointments: appointmentId },
+    await Pro.findByIdAndUpdate(pro, {
+      $pull: { appointments: appointment._id },
     });
     console.log("Appointment deleted:", appointment);
     res.status(200).json({ message: "Appointment successfully deleted" });

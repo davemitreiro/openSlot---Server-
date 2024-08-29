@@ -27,8 +27,11 @@ app.use("/api", proRoutes); */
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
-/* const protectedRoutes = require("./routes/protected.routes");
-app.use("/protected", isAuthenticated, protectedRoutes); */
+const userRoutes = require("./routes/user.routes");
+app.use("/users", userRoutes);
+
+const proRoutes = require("./routes/pro.routes");
+app.use("/pro", proRoutes);
 
 const appointmentRoutes = require("./routes/appointment.routes");
 app.use("/appointments", appointmentRoutes);
