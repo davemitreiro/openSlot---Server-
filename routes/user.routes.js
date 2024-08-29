@@ -22,7 +22,7 @@ router.get("/:userId", (req, res) => {
     });
 });
 
-router.put("/:userId", isAuthenticated, (req, res) => {
+router.put("/:userId/update", isAuthenticated, (req, res) => {
   const { userId } = req.params;
   const { email, password } = req.body;
 
@@ -44,13 +44,13 @@ router.put("/:userId", isAuthenticated, (req, res) => {
     });
 });
 
-router.delete("/:userId", isAuthenticated, (req, res) => {
+router.delete("/:userId/delete", isAuthenticated, (req, res) => {
   const { userId } = req.params;
 
   User.findByIdAndDelete(userId)
     .then((user) => {
       console.log("User deleted:", userId);
-      res.status(201).json(user);
+      res.status(201).json({message : "User deleted succesfully"});
     })
     .catch((error) => {
       console.error("Error while deleting user account ->", error);

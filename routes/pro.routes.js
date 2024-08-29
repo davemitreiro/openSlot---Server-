@@ -25,7 +25,7 @@ router.get("/:proId", (req, res) => {
 });
 
 //update pro
-router.put("/:proId", isAuthenticated, (req, res) => {
+router.put("/:proId/update", isAuthenticated, (req, res) => {
   const { proId } = req.params;
   const { fullname, email, password } = req.body;
 
@@ -49,13 +49,15 @@ router.put("/:proId", isAuthenticated, (req, res) => {
 });
 
 //delete pro
-router.delete("/:proId", isAuthenticated, (req, res) => {
+router.delete("/:proId/delete", isAuthenticated, (req, res) => {
   const { proId } = req.params;
 
   Pro.findByIdAndDelete(proId)
     .then((pro) => {
       console.log("User deleted:", proId);
-      res.status(201).json(pro);
+      res
+        .status(201)
+        .json({ message: "Professional user deleted succesfully" });
     })
     .catch((error) => {
       console.error("Error while deleting professional user ->", error);

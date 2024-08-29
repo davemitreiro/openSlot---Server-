@@ -4,6 +4,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
+const User = require("../models/User.model");
+const Pro = require("../models/Pro.model");
+
 const isAuthenticated = require("../middleware/jwt-middleware.js");
 
 // How many rounds should bcrypt run the salt (default - 10 rounds)
