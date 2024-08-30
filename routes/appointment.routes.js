@@ -9,6 +9,20 @@ const Pro = require("../models/Pro.model");
 // -> You don't need this route, at least for now
 // -----------------------
 
+//get all apointments
+router.get("/", async (req, res) => {
+  try {
+    const appointments = await Appointment.find({})
+      .populate("user")
+      .populate("pro");
+    console.log("Retrieved appointments ->", appointments);
+    res.json(appointments);
+  } catch (error) {
+    console.error("Error while retrieving appointments ->", error);
+    res.status(500).json({ error: "Failed to retrieve appointments" });
+  }
+});
+
 // Get all appointments by userID
 router.get("/user/:userId/all", async (req, res) => {
   const { userId } = req.params;
