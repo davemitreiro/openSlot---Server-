@@ -46,11 +46,6 @@ router.get("/pro/:proId/all", async (req, res) => {
   }
 });
 
-// -----------------------
-// -> /create why?
-// -> use only /
-// -----------------------
-
 // Create a new appointment
 router.post("/", async (req, res) => {
   const { title, startTime, endTime, notes, pro, user } = req.body;
@@ -106,11 +101,6 @@ router.get("/:appointmentId", async (req, res) => {
   }
 });
 
-// -----------------------
-// -> /:appointmentId/update why?
-// -> use only /:appointmentId
-// -----------------------
-
 // User - Update appointment
 router.put("/:appointmentId", async (req, res) => {
   const { appointmentId } = req.params;
@@ -135,11 +125,6 @@ router.put("/:appointmentId", async (req, res) => {
     res.status(500).json({ error: "Failed to update appointment" });
   }
 });
-
-// -----------------------
-// -> /:appointmentId/delete why?
-// -> use only /:appointmentId
-// -----------------------
 
 //delete appointment
 router.delete("/:appointmentId", async (req, res) => {
