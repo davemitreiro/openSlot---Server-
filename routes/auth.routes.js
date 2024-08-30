@@ -123,8 +123,7 @@ router.post("/signup", async (req, res, next) => {
 
 // POST  /auth/login - Verifies email and password and returns a JWT
 router.post("/login", async (req, res, next) => {
-  const { role, data } = req.body;
-  const { email, password } = data;
+  const { role, email, password } = req.body;
 
   // Check if email or password are provided as empty string
   if (!email || !password) {
