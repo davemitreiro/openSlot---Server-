@@ -11,12 +11,20 @@ require("./db");
 const express = require("express");
 
 const cors = require("cors");
-
 const app = express();
 
-app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173" || "http://localhost:5174",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-app.use(cors());
+// Handle preflight requests
+app.options("*", cors());
+
+app.use(express.json());
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
