@@ -16,15 +16,7 @@ const app = express();
 
 app.use(express.json());
 
-//app.use(cors());
-
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Allow requests from your local development server
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-  })
-);
+app.use(cors());
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
