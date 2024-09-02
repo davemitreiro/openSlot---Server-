@@ -5,6 +5,19 @@ const isAuthenticated = require("../middleware/jwt-middleware.js");
 
 const Pro = require("../models/Pro.model.js");
 
+//get all pros
+
+router.get("/", (req, res) => {
+  Pro.find({})
+    .then((pro) => {
+      res.status(201).json(pro);
+    })
+    .catch((err) => {
+      console.error("Error getting pro users:", err);
+      res.status(404).json({ error: "Pro users not found" });
+    });
+});
+
 //get pro by ID
 
 router.get("/:proId", (req, res) => {

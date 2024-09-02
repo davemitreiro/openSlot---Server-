@@ -5,6 +5,19 @@ const isAuthenticated = require("../middleware/jwt-middleware.js");
 
 const User = require("../models/User.model");
 
+//Get all users
+
+router.get("/", (req, res) => {
+  User.find({})
+    .then((user) => {
+      res.status(201).json(user);
+    })
+    .catch((err) => {
+      console.error("Error getting users:", err);
+      res.status(404).json({ error: "Users not found" });
+    });
+});
+
 router.get("/:userId", (req, res) => {
   const { userId } = req.params;
 
@@ -22,8 +35,6 @@ router.get("/:userId", (req, res) => {
     });
 });
 
-// -----------------------
-// -> /:userId/update why?
 // -> use only /:userID
 // -----------------------
 
@@ -60,7 +71,7 @@ router.delete("/:userId", isAuthenticated, (req, res) => {
   User.findByIdAndDelete(userId)
     .then((user) => {
       console.log("User deleted:", userId);
-      res.status(201).json({message : "User deleted succesfully"});
+      res.status(201).json({ message: "User deleted succesfully" });
     })
     .catch((error) => {
       console.error("Error while deleting user account ->", error);
