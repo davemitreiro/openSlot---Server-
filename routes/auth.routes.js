@@ -21,7 +21,7 @@ function buildResponseObject(obj) {
   delete newObj.password;
   // Change the _id key to id
   newObj.id = newObj._id;
-  delete newObj._id;
+  //delete newObj._id;
 
   return newObj;
 }
@@ -123,7 +123,8 @@ router.post("/signup", async (req, res, next) => {
 
 // POST  /auth/login - Verifies email and password and returns a JWT
 router.post("/login", async (req, res, next) => {
-  const { role, email, password } = req.body;
+  const { role, data } = req.body;
+  const { email, password } = data;
 
   // Check if email or password are provided as empty string
   if (!email || !password) {
@@ -194,7 +195,7 @@ router.post("/login", async (req, res, next) => {
     });
 
     // Send the token as the response
-    res.status(200).json({ authToken });
+    res.status(200).json({ authToken, userData });
   } else {
     res.status(401).json({ message: "Unable to authenticate the user" });
   }
