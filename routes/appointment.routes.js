@@ -28,7 +28,7 @@ router.get("/user/:userId/all", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const user = await Appointment.findById(userId).populate("appointments");
+    const user = await User.findById(userId).populate("appointments");
     console.log("Retrieved appointments ->", user.appointments);
     res.json(user.appointments);
   } catch (error) {
