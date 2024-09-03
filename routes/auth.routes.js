@@ -21,7 +21,7 @@ function buildResponseObject(obj) {
   delete newObj.password;
   // Change the _id key to id
   newObj.id = newObj._id;
-  //delete newObj._id;
+  delete newObj._id;
 
   return newObj;
 }
@@ -189,13 +189,13 @@ router.post("/login", async (req, res, next) => {
     const userData = buildResponseObject(foundUser);
 
     // Create a JSON Web Token and sign it
-    const authToken = jwt.sign(userData, process.env.SECRET_TOKEN, {
+    const authToken = jwt.sign({ userData, role }, process.env.SECRET_TOKEN, {
       algorithm: "HS256",
       expiresIn: "5h",
     });
 
     // Send the token as the response
-    res.status(200).json({ authToken, userData });
+    res.status(200).json({ authToken, userData, role });
   } else {
     res.status(401).json({ message: "Unable to authenticate the user" });
   }
