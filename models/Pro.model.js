@@ -4,6 +4,10 @@ const proSchema = new Schema({
   fullname: {
     type: String,
   },
+  img: {
+    type: String,
+    default: "https://freesvg.org/img/abstract-user-flat-4.png",
+  },
   email: {
     type: String,
     required: [true, "Email is required."],

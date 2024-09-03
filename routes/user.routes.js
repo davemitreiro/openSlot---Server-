@@ -45,6 +45,8 @@ router.put("/:userId", isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(
     userId,
     {
+      fullName,
+      img,
       email,
       password,
     },

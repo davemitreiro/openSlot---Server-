@@ -5,6 +5,10 @@ const userSchema = new Schema({
     type: String,
   },
   age: { type: Number },
+  img: {
+    type: String,
+    default: "https://freesvg.org/img/abstract-user-flat-4.png",
+  },
   email: {
     type: String,
     required: [true, "Email is required."],

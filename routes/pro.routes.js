@@ -51,6 +51,7 @@ router.put("/:proId", isAuthenticated, (req, res) => {
     proId,
     {
       fullname,
+      img,
       email,
       password,
     },
