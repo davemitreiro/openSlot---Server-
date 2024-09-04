@@ -7,7 +7,7 @@ const Pro = require("../models/Pro.model.js");
 
 const fileUploader = require("../config/cloudinary.config");
 
-router.put(
+/*router.put(
   "/:proId",
   isAuthenticated,
   fileUploader.single("img"),
@@ -40,7 +40,7 @@ router.put(
         res.status(500).json({ error: "Failed to update pro account" });
       });
   }
-);
+);*/
 
 //get all pros
 
