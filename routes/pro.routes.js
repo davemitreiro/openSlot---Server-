@@ -45,12 +45,12 @@ router.get("/:proId", (req, res) => {
 //update pro
 router.put("/:proId", isAuthenticated, (req, res) => {
   const { proId } = req.params;
-  const { fullname, email, password } = req.body;
+  const { fullName, img, email, password } = req.body;
 
   Pro.findByIdAndUpdate(
     proId,
     {
-      fullname,
+      fullName,
       img,
       email,
       password,

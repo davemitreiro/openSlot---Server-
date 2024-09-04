@@ -29,7 +29,7 @@ function buildResponseObject(obj) {
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", async (req, res, next) => {
   const { role, data } = req.body;
-  const { email, password } = data;
+  const { fullName, email, password } = data;
 
   // Check if email or password or name are provided
   if (!email || !password) {

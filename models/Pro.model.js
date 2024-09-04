@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const proSchema = new Schema({
-  fullname: {
+  fullName: {
     type: String,
   },
   img: {

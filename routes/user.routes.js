@@ -40,7 +40,7 @@ router.get("/:userId", (req, res) => {
 
 router.put("/:userId", isAuthenticated, (req, res) => {
   const { userId } = req.params;
-  const { email, password } = req.body;
+  const { fullName, img, email, password } = req.body;
 
   User.findByIdAndUpdate(
     userId,
