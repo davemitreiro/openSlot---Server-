@@ -42,24 +42,28 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
   const { userId } = req.params;
   const { fullName, email, password, img } = req.body;
 
-  const updateUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      fullName,
-      img,
-      email,
-      password,
-    },
-    { new: true }
-  )
-    .then((user) => {
-      console.log("User updated:", updateUser);
-      res.status(201).json(user);
-    })
-    .catch((error) => {
-      console.error("Error while updating user ->", error);
-      res.status(500).json({ error: "Failed to update  user" });
-    });
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        fullName,
+        img,
+        email,
+        password,
+      },
+      { new: true } // This option ensures the returned document is the updated one.
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log("User updated:", updatedUser);
+    res.status(201).json(updatedUser);
+  } catch (error) {
+    console.error("Error while updating user ->", error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
 });
 
 // -----------------------

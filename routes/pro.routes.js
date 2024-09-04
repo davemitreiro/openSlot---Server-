@@ -84,24 +84,23 @@ router.put("/:proId", isAuthenticated, async (req, res) => {
   const { proId } = req.params;
   const { fullName, email, password, img } = req.body;
 
-  const updatePro = await Pro.findByIdAndUpdate(
-    proId,
-    {
-      fullName,
-      img,
-      email,
-      password,
-    },
-    { new: true }
-  )
-    .then((pro) => {
-      console.log("User updated:", pro);
-      res.status(201).json(pro);
-    })
-    .catch((error) => {
-      console.error("Error while updating professional user ->", error);
-      res.status(500).json({ error: "Failed to update professional user" });
-    });
+  try {
+    const updatedPro = await Pro.findByIdAndUpdate(
+      proId,
+      { fullName, email, password, img },
+      { new: true }
+    );
+
+    if (!updatedPro) {
+      return res.status(404).json({ error: "Professional not found" });
+    }
+
+    console.log("Professional updated:", updatedPro);
+    res.status(200).json(updatedPro); // Use 200 OK for successful updates
+  } catch (error) {
+    console.error("Error while updating professional user ->", error);
+    res.status(500).json({ error: "Failed to update professional user" });
+  }
 });
 
 // -----------------------
