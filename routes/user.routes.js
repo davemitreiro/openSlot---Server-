@@ -5,6 +5,25 @@ const isAuthenticated = require("../middleware/jwt-middleware.js");
 
 const User = require("../models/User.model");
 
+const fileUploader = require("../config/cloudinary.config");
+
+router.post(
+  ":userId/upload",
+  fileUploader.single("imageUrl"),
+  (req, res, next) => {
+    // console.log("file is: ", req.file)
+
+    if (!req.file) {
+      next(new Error("No file uploaded!"));
+      return;
+    }
+
+    // Get the URL of the uploaded file and send it as a response.
+    // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
+
+    res.json({ fileUrl: req.file.path });
+  }
+);
 //Get all users
 
 router.get("/", (req, res) => {

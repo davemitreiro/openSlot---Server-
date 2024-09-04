@@ -5,7 +5,7 @@ const userSchema = new Schema({
     type: String,
   },
   age: { type: Number },
-  img: {
+  imageUrl: {
     type: String,
     default: "https://freesvg.org/img/abstract-user-flat-4.png",
   },

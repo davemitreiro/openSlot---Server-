@@ -4,7 +4,7 @@ const proSchema = new Schema({
   fullname: {
     type: String,
   },
-  img: {
+  imageUrl: {
     type: String,
     default: "https://freesvg.org/img/abstract-user-flat-4.png",
   },
