@@ -80,11 +80,11 @@ router.get("/:proId", (req, res) => {
 // -----------------------
 
 //update pro
-router.put("/:proId", isAuthenticated, (req, res) => {
+router.put("/:proId", isAuthenticated, async (req, res) => {
   const { proId } = req.params;
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, img } = req.body;
 
-  Pro.findByIdAndUpdate(
+  const updatePro = await Pro.findByIdAndUpdate(
     proId,
     {
       fullName,
