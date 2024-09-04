@@ -7,25 +7,6 @@ const User = require("../models/User.model");
 
 const fileUploader = require("../config/cloudinary.config");
 
-router.post(
-  ":userId/upload",
-  fileUploader.single("imageUrl"),
-  (req, res, next) => {
-    // console.log("file is: ", req.file)
-
-    if (!req.file) {
-      next(new Error("No file uploaded!"));
-      return;
-    }
-
-    // Get the URL of the uploaded file and send it as a response.
-    // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
-
-    res.json({ fileUrl: req.file.path });
-  }
-);
-//Get all users
-
 router.get("/", (req, res) => {
   User.find({})
     .then((user) => {
@@ -57,29 +38,40 @@ router.get("/:userId", (req, res) => {
 // -> use only /:userID
 // -----------------------
 
-router.put("/:userId", isAuthenticated, (req, res) => {
-  const { userId } = req.params;
-  const { email, password } = req.body;
+router.put(
+  "/:userId",
+  isAuthenticated,
+  fileUploader.single("img"),
+  (req, res) => {
+    const { userId } = req.params;
+    const { email, password, fullName } = req.body;
 
-  User.findByIdAndUpdate(
-    userId,
-    {
-      fullName,
-      img,
-      email,
-      password,
-    },
-    { new: true }
-  )
-    .then((user) => {
-      console.log("User updated:", user);
-      res.status(201).json(user);
-    })
-    .catch((error) => {
-      console.error("Error while updating user account ->", error);
-      res.status(500).json({ error: "Failed to update user account" });
-    });
-});
+    // If a file is uploaded, use its path; otherwise, keep the current image URL.
+    const img = req.file
+      ? req.file.path // Cloudinary URL is stored in req.file.path
+      : req.body.img;
+
+    // Include the `img` field in the update operation.
+    User.findByIdAndUpdate(
+      userId,
+      {
+        fullName,
+        email,
+        password,
+        img,
+      },
+      { new: true }
+    )
+      .then((user) => {
+        console.log("User updated:", user);
+        res.status(201).json(user);
+      })
+      .catch((error) => {
+        console.error("Error while updating user account ->", error);
+        res.status(500).json({ error: "Failed to update user account" });
+      });
+  }
+);
 
 // -----------------------
 // -> /:userId/delete why?

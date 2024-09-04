@@ -7,21 +7,38 @@ const Pro = require("../models/Pro.model.js");
 
 const fileUploader = require("../config/cloudinary.config");
 
-router.post(
-  ":proId/upload",
-  fileUploader.single("imageUrl"),
-  (req, res, next) => {
-    // console.log("file is: ", req.file)
+router.put(
+  "/:proId",
+  isAuthenticated,
+  fileUploader.single("img"),
+  (req, res) => {
+    const { proId } = req.params;
+    const { email, password, fullName } = req.body;
 
-    if (!req.file) {
-      next(new Error("No file uploaded!"));
-      return;
-    }
+    // If a file is uploaded, use its path; otherwise, keep the current image URL.
+    const img = req.file
+      ? req.file.path // Cloudinary URL is stored in req.file.path
+      : req.body.img;
 
-    // Get the URL of the uploaded file and send it as a response.
-    // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
-
-    res.json({ fileUrl: req.file.path });
+    // Include the `img` field in the update operation.
+    Pro.findByIdAndUpdate(
+      proId,
+      {
+        fullName,
+        email,
+        password,
+        img,
+      },
+      { new: true }
+    )
+      .then((pro) => {
+        console.log("Pro updated:", pro);
+        res.status(201).json(pro);
+      })
+      .catch((error) => {
+        console.error("Error while updating pro account ->", error);
+        res.status(500).json({ error: "Failed to update pro account" });
+      });
   }
 );
 
