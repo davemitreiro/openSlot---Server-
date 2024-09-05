@@ -80,28 +80,39 @@ router.get("/:proId", (req, res) => {
 // -----------------------
 
 //update pro
-router.put("/:proId", isAuthenticated, async (req, res) => {
-  const { proId } = req.params;
-  const { fullName, email, password, img } = req.body;
+router.put(
+  "/:proId",
+  isAuthenticated,
+  fileUploader.single("img"), // Add the file uploader middleware
+  async (req, res) => {
+    const { proId } = req.params;
+    const { fullName, email, password } = req.body;
+    const img = req.file ? req.file.path : undefined; // Get the uploaded image URL from Cloudinary
 
-  try {
-    const updatedPro = await Pro.findByIdAndUpdate(
-      proId,
-      { fullName, email, password, img },
-      { new: true }
-    );
+    try {
+      const updatedPro = await Pro.findByIdAndUpdate(
+        proId,
+        {
+          fullName,
+          email,
+          password,
+          img, // Set the image URL
+        },
+        { new: true } // Return the updated document
+      );
 
-    if (!updatedPro) {
-      return res.status(404).json({ error: "Professional not found" });
+      if (!updatedPro) {
+        return res.status(404).json({ error: "Professional not found" });
+      }
+
+      console.log("Professional updated:", updatedPro);
+      res.status(200).json(updatedPro); // Status 200 is more appropriate for successful updates
+    } catch (error) {
+      console.error("Error while updating professional user ->", error);
+      res.status(500).json({ error: "Failed to update professional user" });
     }
-
-    console.log("Professional updated:", updatedPro);
-    res.status(200).json(updatedPro); // Use 200 OK for successful updates
-  } catch (error) {
-    console.error("Error while updating professional user ->", error);
-    res.status(500).json({ error: "Failed to update professional user" });
   }
-});
+);
 
 // -----------------------
 // -> /:proId/delete why?
