@@ -29,7 +29,7 @@ function buildResponseObject(obj) {
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", async (req, res, next) => {
   const { role, data } = req.body;
-  const { email, password } = data;
+  const { fullName, email, password } = data;
 
   // Check if email or password or name are provided
   if (!email || !password) {
@@ -124,7 +124,7 @@ router.post("/signup", async (req, res, next) => {
 // POST  /auth/login - Verifies email and password and returns a JWT
 router.post("/login", async (req, res, next) => {
   const { role, data } = req.body;
-  const { email, password } = data;
+  const { fullName, email, password } = data;
 
   // Check if email or password are provided as empty string
   if (!email || !password) {
