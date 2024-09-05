@@ -2,45 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const isAuthenticated = require("../middleware/jwt-middleware.js");
+const bcrypt = require("bcrypt");
 
 const Pro = require("../models/Pro.model.js");
 
 const fileUploader = require("../config/cloudinary.config");
 
-/*router.put(
-  "/:proId",
-  isAuthenticated,
-  fileUploader.single("img"),
-  (req, res) => {
-    const { proId } = req.params;
-    const { email, password, fullName } = req.body;
-
-    // If a file is uploaded, use its path; otherwise, keep the current image URL.
-    const img = req.file
-      ? req.file.path // Cloudinary URL is stored in req.file.path
-      : req.body.img;
-
-    // Include the `img` field in the update operation.
-    Pro.findByIdAndUpdate(
-      proId,
-      {
-        fullName,
-        email,
-        password,
-        img,
-      },
-      { new: true }
-    )
-      .then((pro) => {
-        console.log("Pro updated:", pro);
-        res.status(201).json(pro);
-      })
-      .catch((error) => {
-        console.error("Error while updating pro account ->", error);
-        res.status(500).json({ error: "Failed to update pro account" });
-      });
-  }
-);*/
+const saltRounds = 12;
 
 //get all pros
 
@@ -90,12 +58,28 @@ router.put(
     const img = req.file ? req.file.path : undefined; // Get the uploaded image URL from Cloudinary
 
     try {
+      // Find the professional user by ID
+      const existingPro = await Pro.findById(proId);
+
+      if (!existingPro) {
+        return res.status(404).json({ error: "Professional not found" });
+      }
+
+      // If a new password is provided, hash it
+      let hashedPassword = existingPro.password; // Default to the existing password
+
+      if (password) {
+        const salt = bcrypt.genSaltSync(saltRounds);
+        hashedPassword = bcrypt.hashSync(password, salt);
+      }
+
+      // Update the professional user
       const updatedPro = await Pro.findByIdAndUpdate(
         proId,
         {
           fullName,
           email,
-          password,
+          password: hashedPassword,
           img, // Set the image URL
         },
         { new: true } // Return the updated document

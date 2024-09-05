@@ -2,10 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const isAuthenticated = require("../middleware/jwt-middleware.js");
+const bcrypt = require("bcrypt");
 
 const User = require("../models/User.model");
 
 const fileUploader = require("../config/cloudinary.config");
+
+const saltRounds = 12;
 
 router.get("/", (req, res) => {
   User.find({})
@@ -41,19 +44,35 @@ router.get("/:userId", (req, res) => {
 router.put(
   "/:userId",
   isAuthenticated,
-  fileUploader.single("img"),
+  fileUploader.single("img"), // Add the file uploader middleware
   async (req, res) => {
     const { userId } = req.params;
     const { fullName, email, password } = req.body;
     const img = req.file ? req.file.path : undefined; // Get the uploaded image URL from Cloudinary
 
     try {
+      // Find the user by ID
+      const existingUser = await User.findById(userId);
+
+      if (!existingUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // If a new password is provided, hash it
+      let hashedPassword = existingUser.password; // Default to the existing password
+
+      if (password) {
+        const salt = bcrypt.genSaltSync(saltRounds);
+        hashedPassword = bcrypt.hashSync(password, salt);
+      }
+
+      // Update the user
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
           fullName,
           email,
-          password,
+          password: hashedPassword,
           img, // Set the image URL
         },
         { new: true } // Return the updated document
