@@ -28,10 +28,20 @@ module.exports = (app) => {
     })
   );
 
-  console.log(
-    "CORS ORIGIN ENV: ",
-    process.env.ORIGIN || "http://localhost:5173"
-  );
+  // Preflight (OPTIONS) requests handling
+  app.options("*", (req, res) => {
+    res.header(
+      "Access-Control-Allow-Origin",
+      process.env.ORIGIN || "http://localhost:5173"
+    );
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
+    );
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.sendStatus(204); // No content
+  });
 
   // In development environment the app logs
   app.use(logger("dev"));
