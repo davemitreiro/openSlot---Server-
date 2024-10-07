@@ -9,44 +9,30 @@ const logger = require("morgan");
 // https://www.npmjs.com/package/cookie-parser
 const cookieParser = require("cookie-parser");
 
-// ℹ️ Needed to accept requests from 'the outside'. CORS stands for cross-origin resource sharing
-// unless the request is from the same domain, by default express won't accept POST requests
+// ℹ️ Needed to accept from requests from 'the outside'. CORS stands for cross origin resource sharing
+// unless the request if from the same domain, by default express wont accept POST requests
 const cors = require("cors");
 
-// Set the frontend URL from the environment variable, fallback to localhost during development
 const FRONTEND_URL = process.env.ORIGIN || "http://localhost:5173";
 
 // Middleware configuration
 module.exports = (app) => {
-  // Enable trust proxy for services like Vercel or Heroku that use proxies
+  // Because this is a server that will accept requests from outside and it will be hosted ona server with a `proxy`, express needs to know that it should trust that setting.
+  // Services like heroku use something called a proxy and you need to add this to your server
   app.set("trust proxy", 1);
 
-  // CORS configuration
+  // controls a very specific header to pass headers from the frontend
   app.use(
     cors({
-      origin: [FRONTEND_URL], // Allow requests from your frontend URL
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these methods
-      credentials: true, // Allow cookies and credentials to be sent in requests
-      allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+      origin: [FRONTEND_URL],
     })
   );
 
-  // Handle preflight requests (OPTIONS method)
-  app.options("*", cors());
-
-  // Logger for development environment
+  // In development environment the app logs
   app.use(logger("dev"));
 
-  // Parse incoming requests with JSON payloads
+  // To have access to `body` property in the request
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-
-  // Cookie parser to manage cookies in requests
   app.use(cookieParser());
-
-  // (Optional) Add this for debugging CORS
-  app.use((req, res, next) => {
-    console.log("CORS headers for request:", res.getHeaders());
-    next();
-  });
 };
