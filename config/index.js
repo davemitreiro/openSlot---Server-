@@ -28,6 +28,11 @@ module.exports = (app) => {
     })
   );
 
+  console.log(
+    "CORS ORIGIN ENV: ",
+    process.env.ORIGIN || "http://localhost:5173"
+  );
+
   // In development environment the app logs
   app.use(logger("dev"));
 
